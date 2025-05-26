@@ -1,3 +1,4 @@
+import io
 import streamlit as st
 import tempfile
 import json
@@ -51,6 +52,17 @@ if uploaded_files:
             'border-color': 'white'
         }))
 
+                # 🔽 Download Analysis as XLSX
+        output_analysis = io.BytesIO()
+        with pd.ExcelWriter(output_analysis, engine='xlsxwriter') as writer:
+            combined_analysis.to_excel(writer, index=False, sheet_name='Analysis')
+        st.download_button(
+            label="Download Analysis as Excel",
+            data=output_analysis.getvalue(),
+            file_name="resume_analysis.xlsx",
+            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        )
+
         st.subheader(" Summary View")
         combined_summary = pd.concat([parse_summary_dataframe(d) for d in all_data], ignore_index=True)
         st.dataframe(combined_summary.style.set_properties(**{
@@ -58,4 +70,14 @@ if uploaded_files:
             'color': 'black',
             'border-color': 'white'
         }))
+
+        output_summary = io.BytesIO()
+        with pd.ExcelWriter(output_summary, engine='xlsxwriter') as writer:
+            combined_summary.to_excel(writer, index=False, sheet_name='Summary')
+        st.download_button(
+            label="Download Summary as Excel",
+            data=output_summary.getvalue(),
+            file_name="resume_summary.xlsx",
+            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        )
 
