@@ -5,7 +5,7 @@ import json
 import re
 import pandas as pd
 from llm.chains import resume_prompt_chain
-from parsers.dataframe_formatter import parse_analysis_dataframe, parse_summary_dataframe
+from parsers.dataframe_formatter import dataframe_to_docx, parse_analysis_dataframe, parse_summary_dataframe
 from utils.pdf_utils import extract_text_from_pdf
 
 st.set_page_config(layout="wide")
@@ -63,6 +63,9 @@ if uploaded_files:
             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         )
 
+        docx_analysis = dataframe_to_docx(combined_analysis, "Resume Analysis")
+        st.download_button("Download Analysis as .docx", docx_analysis, file_name="resume_analysis.docx")
+
         st.subheader(" Summary View")
         combined_summary = pd.concat([parse_summary_dataframe(d) for d in all_data], ignore_index=True)
         st.dataframe(combined_summary.style.set_properties(**{
@@ -80,4 +83,8 @@ if uploaded_files:
             file_name="resume_summary.xlsx",
             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         )
+
+        
+        docx_summary = dataframe_to_docx(combined_summary, "Resume Summary")
+        st.download_button("Download Summary as .docx", docx_summary, file_name="resume_summary.docx")
 
